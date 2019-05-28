@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
-
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -24,7 +23,6 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.SeekBar;
 import android.widget.Toast;
-
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
@@ -102,8 +100,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         seekbarFunction();
         // import kml file
         importKml();
-
     }
+
+
     public void importKml () {
         try {
             mMap = getMap();
@@ -117,6 +116,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap getMap() {
         return mMap;
     }
+
+
     private void retrieveFileFromUrl() {
         new DownloadKmlFile(getString(R.string.kml_url)).execute();
     }
@@ -284,7 +285,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-
         // Add a marker in Sydney and move the camera
    /*     LatLng sydney = new LatLng(40, 40);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
