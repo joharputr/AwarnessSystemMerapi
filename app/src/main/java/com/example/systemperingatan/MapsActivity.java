@@ -23,6 +23,7 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.SeekBar;
 import android.widget.Toast;
+
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
@@ -52,6 +53,7 @@ import com.google.maps.android.data.kml.KmlPlacemark;
 import com.google.maps.android.data.kml.KmlPolygon;
 import com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar;
 
+
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.ByteArrayInputStream;
@@ -59,6 +61,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.NoSuchElementException;
 import java.util.Random;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
@@ -103,7 +106,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-    public void importKml () {
+    public void importKml() {
         try {
             mMap = getMap();
             //retrieveFileFromResource();
@@ -119,8 +122,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     private void retrieveFileFromUrl() {
-        new DownloadKmlFile(getString(R.string.kml_url)).execute();
+        new DownloadKmlFile("https://drive.google.com/uc?export=download&id=1DHE-lkqO9inO4v6H7bvV702kLN5QJ_Gr").execute();
     }
+
     private class DownloadKmlFile extends AsyncTask<String, Void, byte[]> {
         private final String mUrl;
 
@@ -130,7 +134,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         protected byte[] doInBackground(String... params) {
             try {
-                InputStream is =  new URL(mUrl).openStream();
+                InputStream is = new URL(mUrl).openStream();
                 ByteArrayOutputStream buffer = new ByteArrayOutputStream();
                 int nRead;
                 byte[] data = new byte[16384];
@@ -162,6 +166,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
+            } catch (NoSuchElementException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -180,7 +186,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         for (LatLng latLng : polygon.getOuterBoundaryCoordinates()) {
             builder.include(latLng);
         }
-
         int width = getResources().getDisplayMetrics().widthPixels;
         int height = getResources().getDisplayMetrics().heightPixels;
         getMap().moveCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), width, height, 1));
@@ -240,7 +245,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                     mCurrent = mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("You"));
                     //movecammera to this position
-                //    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 12.0f));
+                    //    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 12.0f));
 
                 }
             });
@@ -396,12 +401,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mLastLocation = location;
         displayLocation();
     }
+
     private void seekbarFunction() {
         mSeekbar = (VerticalSeekBar) findViewById(R.id.verticalSeekbar);
         mSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(progress),2000,null);
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(progress), 2000, null);
             }
 
             @Override
