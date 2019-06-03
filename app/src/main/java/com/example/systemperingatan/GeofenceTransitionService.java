@@ -2,6 +2,7 @@ package com.example.systemperingatan;
 
 import android.app.IntentService;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
@@ -26,15 +27,6 @@ public class GeofenceTransitionService extends IntentService {
 
     public GeofenceTransitionService() {
         super(TAG);
-    }
-
-    /**
-     * Creates an IntentService.  Invoked by your subclass's constructor.
-     *
-     * @param name Used to name the worker thread, important only for debugging.
-     */
-    public GeofenceTransitionService(String name) {
-        super(name);
     }
 
     private static String getErrorString(int errorCode) {
@@ -106,6 +98,20 @@ public class GeofenceTransitionService extends IntentService {
         // Creating and sending Notification
         NotificationManager notificatioMng =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            String CHANNEL_ID = "my_channel_01";
+            CharSequence name = "my_channel";
+            String Description = "This is my channel";
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
+            mChannel.setDescription(Description);
+            mChannel.enableLights(true);
+            mChannel.setLightColor(Color.RED);
+            mChannel.enableVibration(true);
+            mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+            mChannel.setShowBadge(false);
+            notificatioMng.createNotificationChannel(mChannel);
+        }
         notificatioMng.notify(
                 GEOFENCE_NOTIFICATION_ID,
                 createNotification(msg, notificationPendingIntent));

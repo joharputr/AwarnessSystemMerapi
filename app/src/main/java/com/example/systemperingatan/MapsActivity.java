@@ -21,7 +21,6 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.Spinner;
@@ -56,7 +55,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar;
 
-public class MapsActivity extends FragmentActivity implements AdapterView.OnItemClickListener, OnMapReadyCallback,
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener, GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener, ResultCallback<Status> {
@@ -161,7 +160,6 @@ public class MapsActivity extends FragmentActivity implements AdapterView.OnItem
         });
     }
 
-
     private void startGeofence() {
         Log.i("START GEOFENCE", "startGeofence()");
         if (geoFenceMarker != null) {
@@ -210,8 +208,7 @@ public class MapsActivity extends FragmentActivity implements AdapterView.OnItem
             return geoFencePendingIntent;
 
         Intent intent = new Intent(this, GeofenceTransitionService.class);
-        return PendingIntent.getService(
-                this, GEOFENCE_REQ_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getService(this, GEOFENCE_REQ_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     @Override
@@ -222,11 +219,6 @@ public class MapsActivity extends FragmentActivity implements AdapterView.OnItem
 
     private void setupSpinner() {
         spName = (Spinner) findViewById(R.id.spinner);
-
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
     }
 
@@ -358,83 +350,10 @@ public class MapsActivity extends FragmentActivity implements AdapterView.OnItem
     @Override
     public void onMapReady(GoogleMap googleMap) {
         Log.d("onMapReady", "onMapReady()");
-        mMap = googleMap;
-        LatLng dangerous_area = new LatLng(-7.4083162, 109.0869432);
-        mMap.addCircle(new CircleOptions()
-                .center(dangerous_area)
-                .radius(500) //meter
-                .strokeColor(Color.BLUE)
-                .fillColor(0x220000FF)
-                .strokeWidth(5.0f));
-
-        //Add geoquery here
-        //0.5f = 0.5 km
-        GeoQuery geoQuery = geofire.queryAtLocation(new GeoLocation(dangerous_area.latitude, dangerous_area.longitude), 0.5f);
-        geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
-            @RequiresApi(api = Build.VERSION_CODES.M)
-            @Override
-            public void onKeyEntered(String key, GeoLocation location) {
-                sendNotification(String.format("%s entered the dangerous area", key));
-            }
-
-            @RequiresApi(api = Build.VERSION_CODES.M)
-            @Override
-            public void onKeyExited(String key) {
-                sendNotification(String.format("%s is no longer to the dangerous area", key));
-            }
-
-            @Override
-            public void onKeyMoved(String key, GeoLocation location) {
-                Log.d("MOVE", String.format("%s moved within the dangerous area [%f/%f]", key, location.latitude, location.longitude));
-            }
-
-
-            @Override
-            public void onGeoQueryReady() {
-
-            }
-
-            @Override
-            public void onGeoQueryError(DatabaseError error) {
-                Log.e("ERROR", "" + error);
-            }
-        });
+       mMap = googleMap;
         mMap.setOnMapClickListener(this);
         mMap.setOnMarkerClickListener(this);
     }
-
-    private void sendNotification(String content) {
-        NotificationManager manager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            String CHANNEL_ID = "my_channel_01";
-            CharSequence name = "my_channel";
-            String Description = "This is my channel";
-            int importance = NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
-            mChannel.setDescription(Description);
-            mChannel.enableLights(true);
-            mChannel.setLightColor(Color.RED);
-            mChannel.enableVibration(true);
-            mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
-            mChannel.setShowBadge(false);
-            manager.createNotificationChannel(mChannel);
-        }
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.mipmap.ic_launcher_round)
-                .setContentTitle("test")
-                .setContentText(content);
-
-        Intent intent = new Intent(this, MapsActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
-        builder.setContentIntent(pendingIntent);
-        Notification notification = builder.build();
-        notification.flags |= Notification.FLAG_AUTO_CANCEL;
-        notification.defaults |= Notification.DEFAULT_SOUND;
-        manager.notify(NOTIFICATION_ID, notification);
-
-    }
-
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
