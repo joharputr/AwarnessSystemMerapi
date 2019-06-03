@@ -22,6 +22,7 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -95,6 +96,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     //spinner
     private Spinner spName;
     private Button startGeo, removeGeo;
+    private ImageView position;
 
 
     public static Intent makeNotificationIntent(Context context, String msg) {
@@ -102,6 +104,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         intent.putExtra(NOTIFICATION_MSG, msg);
         return intent;
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,6 +117,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //    setupSpinner();
         clickStart();
         clickRemove();
+        clickGPSpositionNow();
+    }
+
+    private void clickGPSpositionNow() {
+        position = (ImageView) findViewById(R.id.iconCurrentPosition);
+        position.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                displayLocation();
+            }
+        });
     }
 
     private void clickRemove() {
@@ -434,6 +448,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         editor.putLong(KEY_GEOFENCE_LAT, Double.doubleToRawLongBits(geoFenceMarker.getPosition().latitude));
         editor.putLong(KEY_GEOFENCE_LON, Double.doubleToRawLongBits(geoFenceMarker.getPosition().longitude));
         editor.apply();
+        editor.clear();
     }
 
     private void drawGeofence() {
