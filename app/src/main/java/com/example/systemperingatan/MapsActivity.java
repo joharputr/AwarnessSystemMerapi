@@ -98,7 +98,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Button startGeo, removeGeo;
     private ImageView position;
 
-
+git
     public static Intent makeNotificationIntent(Context context, String msg) {
         Intent intent = new Intent(context, MapsActivity.class);
         intent.putExtra(NOTIFICATION_MSG, msg);
